@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:restaurant_app/data/model/detail_restaurant_response.dart';
 import 'package:restaurant_app/data/model/list_restaurant_response.dart';
-
 import 'package:restaurant_app/data/model/search_restaurant_response.dart';
 
 class ApiServices {
