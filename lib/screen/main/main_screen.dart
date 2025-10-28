@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:restaurant_app/provider/navbar/index_nav_bar.dart';
 import 'package:restaurant_app/screen/home/home_page.dart';
+import 'package:restaurant_app/screen/settings/settings_page.dart';
 
 import '../search/search_page.dart';
 
@@ -16,6 +17,7 @@ class MainScreen extends StatelessWidget {
           return switch(value.index){
             0 => HomePage(),
             1 => SearchPage(),
+            3 => SettingsPage(),
             _ => const Center(
                 child: Text("Error")
             )
@@ -28,6 +30,9 @@ class MainScreen extends StatelessWidget {
           context.read<IndexNavBar>().index = value;
 
         },
+          selectedItemColor: Colors.green[700],
+          unselectedItemColor: Colors.grey,
+          backgroundColor: Colors.white,
         items: const [
           BottomNavigationBarItem(
               icon: Icon(Icons.home),
@@ -36,6 +41,14 @@ class MainScreen extends StatelessWidget {
           BottomNavigationBarItem(
               icon: Icon(Icons.search),
               label: "Search"
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.favorite),
+              label: "Favorite"
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: "Settings"
           )
         ]
       ),

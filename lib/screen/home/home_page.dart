@@ -16,12 +16,13 @@ class _HomePageState extends State<HomePage> {
       "https://restaurant-api.dicoding.dev/images/small/";
   @override
   void initState() {
+    super.initState();
     Future.microtask(
       () {
+        if (context.read<ListRestaurantProvider>().state is ListRestaurantLoadedState) return;
         context.read<ListRestaurantProvider>().fetchListRestaurantProvider();
       },
     );
-    super.initState();
   }
 
   @override

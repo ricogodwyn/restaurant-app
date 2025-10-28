@@ -10,6 +10,7 @@ class ListRestaurantProvider extends ChangeNotifier{
   ListRestaurantResultState get state => _state;
 
   Future<void> fetchListRestaurantProvider() async{
+    //if (_state is ListRestaurantLoadedState) return;
     try{
       _state = ListRestaurantLoadingState();
       notifyListeners();
