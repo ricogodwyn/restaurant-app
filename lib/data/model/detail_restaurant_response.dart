@@ -54,16 +54,25 @@ class Restaurant {
   });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) => Restaurant(
-    id: json["id"],
-    name: json["name"],
-    description: json["description"],
-    city: json["city"],
-    address: json["address"],
-    pictureId: json["pictureId"],
-    categories: List<Category>.from(json["categories"].map((x) => Category.fromJson(x))),
-    menus: Menus.fromJson(json["menus"]),
-    rating: json["rating"]?.toDouble(),
-    customerReviews: List<CustomerReview>.from(json["customerReviews"].map((x) => CustomerReview.fromJson(x))),
+    id: json['id'],
+    name: json['name'],
+    description: json['description'],
+    city: json['city'],
+    address: json['address'],
+    pictureId: json['pictureId'],
+    rating: (json['rating'] ?? 0).toDouble(),
+
+    categories: json['categories'] != null
+        ? (json['categories'] as List).map((e) => Category.fromJson(e)).toList()
+        : [],
+    menus: json['menus'] != null
+        ? Menus.fromJson(json['menus'])
+        : Menus(foods: [], drinks: []),
+    customerReviews: json['customerReviews'] != null
+        ? (json['customerReviews'] as List)
+        .map((e) => CustomerReview.fromJson(e))
+        .toList()
+        : [],
   );
 
   Map<String, dynamic> toJson() => {
@@ -78,7 +87,17 @@ class Restaurant {
     "rating": rating,
     "customerReviews": List<dynamic>.from(customerReviews.map((x) => x.toJson())),
   };
+  Map<String, dynamic> toJsonSqlite() => {
+    "id": id,
+    "name": name,
+    "description": description,
+    "city": city,
+    "address": address,
+    "pictureId": pictureId,
+    "rating": rating,
+  };
 }
+
 
 class Category {
   final String name;

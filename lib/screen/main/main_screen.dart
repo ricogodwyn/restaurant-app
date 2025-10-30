@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:restaurant_app/provider/navbar/index_nav_bar.dart';
+import 'package:restaurant_app/screen/favorite/favorite_page.dart';
 import 'package:restaurant_app/screen/home/home_page.dart';
 import 'package:restaurant_app/screen/settings/settings_page.dart';
 
@@ -17,6 +18,7 @@ class MainScreen extends StatelessWidget {
           return switch(value.index){
             0 => HomePage(),
             1 => SearchPage(),
+            2 => FavoriteScreen(),
             3 => SettingsPage(),
             _ => const Center(
                 child: Text("Error")

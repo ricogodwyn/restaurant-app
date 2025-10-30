@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:restaurant_app/data/api/api_services.dart';
 import 'package:restaurant_app/provider/detail/detail_restaurant_provider.dart';
+import 'package:restaurant_app/provider/detail/local_database_provider.dart';
 import 'package:restaurant_app/provider/home/list_restaurant_provider.dart';
 import 'package:restaurant_app/provider/navbar/index_nav_bar.dart';
 import 'package:restaurant_app/provider/notification/daily_notification_provider.dart';
@@ -12,6 +13,7 @@ import 'package:restaurant_app/screen/detail/detail_page.dart';
 import 'package:restaurant_app/screen/main/main_screen.dart';
 import 'package:restaurant_app/service/local_notification_service.dart';
 import 'package:restaurant_app/service/shared_preferences_service.dart';
+import 'package:restaurant_app/service/sqlite_services.dart';
 import 'package:restaurant_app/static/navigation_route.dart';
 import 'package:restaurant_app/theme/app_theme.dart';
 import 'package:restaurant_app/theme/util.dart';
@@ -28,20 +30,21 @@ void main() async {
         ChangeNotifierProvider(create: (context) => IndexNavBar()),
         Provider(create: (context) => ApiServices()),
         Provider(create: (context) => SharedPreferencesService(prefs)),
+        Provider(create: (context) => SqliteService()),
         Provider(
           create: (context) => LocalNotificationService()
             ..init()
             ..configureLocalTimeZone(),
-
         ),
-        ChangeNotifierProvider(create: (context) =>  DailyNotificationProvider(
-          context.read<LocalNotificationService>()
-              ..requestPermissions()
-        ),),
         ChangeNotifierProvider(
           create: (context) => SharedPreferencesProvider(
             context.read<SharedPreferencesService>(),
           ),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => DailyNotificationProvider(
+            context.read<LocalNotificationService>()
+          )..requestPermissions(),
         ),
         ChangeNotifierProvider(
           create: (context) =>
@@ -54,6 +57,10 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) =>
               RestaurantSearchResultProvider(context.read<ApiServices>()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) =>
+              LocalDatabaseProvider(context.read<SqliteService>()),
         ),
         ChangeNotifierProvider(create: (context) => ResultState()),
       ],
@@ -77,6 +84,7 @@ class MyApp extends StatelessWidget {
           : ThemeMode.light,
       initialRoute: NavigationRoute.mainRoute.name,
       debugShowCheckedModeBanner: false,
+
       routes: {
         NavigationRoute.mainRoute.name: (context) => MainScreen(),
         NavigationRoute.detailRoute.name: (context) => DetailPage(

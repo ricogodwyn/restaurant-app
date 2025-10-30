@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:restaurant_app/data/model/detail_restaurant_response.dart';
+import 'package:restaurant_app/provider/detail/local_database_provider.dart';
 import 'package:restaurant_app/screen/detail/comment_card.dart';
 import 'package:restaurant_app/screen/detail/grid_builder.dart';
 
-class BodyDetailPage extends StatelessWidget {
+class BodyDetailPage extends StatefulWidget {
   static const String _urlHead =
       "https://restaurant-api.dicoding.dev/images/small/";
   const BodyDetailPage({
@@ -14,6 +16,17 @@ class BodyDetailPage extends StatelessWidget {
   final Restaurant restaurant;
 
   @override
+  State<BodyDetailPage> createState() => _BodyDetailPageState();
+}
+
+class _BodyDetailPageState extends State<BodyDetailPage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    context.read<LocalDatabaseProvider>().loadProfileValueById(widget.restaurant.id);
+  }
+  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
         child: Padding(
@@ -22,9 +35,9 @@ class BodyDetailPage extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadiusGeometry.circular(16),
               child: Hero(
-                tag: restaurant.pictureId,
+                tag: widget.restaurant.pictureId,
                 child: Image.network(
-                  _urlHead + restaurant.pictureId,
+                  BodyDetailPage._urlHead + widget.restaurant.pictureId,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -38,14 +51,35 @@ class BodyDetailPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        restaurant.name,
+                        widget.restaurant.name,
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      Consumer<LocalDatabaseProvider>(
+                        builder: (context, value, child) {
+                          return IconButton(
+                              onPressed: () {
+                                if(value.restaurant?.name == widget.restaurant.name){
+                                  context.read<LocalDatabaseProvider>()
+                                      .removeProfileValueById(widget.restaurant.id);
+                                } else {
+                                  context.read<LocalDatabaseProvider>()
+                                      .saveRestaurantValue(widget.restaurant);
+                                }
+                              },
+                              icon: Icon(value.restaurant?.name == widget.restaurant.name
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                                color: Colors.red,
+                              )
+                          );
+                        },
+                      )
                     ],
                   ),
                   SizedBox(
@@ -56,14 +90,14 @@ class BodyDetailPage extends StatelessWidget {
                       Icon(Icons.location_on, size: 20),
                       SizedBox(width: 2),
                       Text(
-                        restaurant.city,
+                        widget.restaurant.city,
                         style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(width: 10),
                       Icon(Icons.star, size: 20,color: Colors.orange),
                       SizedBox(width: 2),
                       Text(
-                        restaurant.rating.toString(),
+                        widget.restaurant.rating.toString(),
                         style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                       )
                     ],
@@ -71,7 +105,7 @@ class BodyDetailPage extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        restaurant.address,
+                        widget.restaurant.address,
                         style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                       )
                     ],
@@ -83,9 +117,9 @@ class BodyDetailPage extends StatelessWidget {
                     height: 40,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: restaurant.categories.length,
+                      itemCount: widget.restaurant.categories.length,
                       itemBuilder: (context, index) {
-                        final category = restaurant.categories[index];
+                        final category = widget.restaurant.categories[index];
                         return Row(
                           children: [
                             Chip(
@@ -111,7 +145,7 @@ class BodyDetailPage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text(restaurant.description),
+                  Text(widget.restaurant.description),
                   SizedBox.square(dimension: 16),
                   Text(
                     "Menus",
@@ -132,10 +166,10 @@ class BodyDetailPage extends StatelessWidget {
                     height: 8,
                   ),
                   GridBuilder(
-                    itemCount: restaurant.menus.foods.length,
-                    arrayItem: restaurant.menus.foods,
-                    urlHead: _urlHead,
-                    picID: restaurant.pictureId,
+                    itemCount: widget.restaurant.menus.foods.length,
+                    arrayItem: widget.restaurant.menus.foods,
+                    urlHead: BodyDetailPage._urlHead,
+                    picID: widget.restaurant.pictureId,
                   ),
                   Text(
                     "Drinks",
@@ -148,10 +182,10 @@ class BodyDetailPage extends StatelessWidget {
                     height: 8,
                   ),
                   GridBuilder(
-                    itemCount: restaurant.menus.drinks.length,
-                    arrayItem: restaurant.menus.drinks,
-                    urlHead: _urlHead,
-                    picID: restaurant.pictureId,
+                    itemCount: widget.restaurant.menus.drinks.length,
+                    arrayItem: widget.restaurant.menus.drinks,
+                    urlHead: BodyDetailPage._urlHead,
+                    picID: widget.restaurant.pictureId,
                   ),
                   Text(
                     "Reviews",
@@ -163,9 +197,9 @@ class BodyDetailPage extends StatelessWidget {
 
                   ListView.builder(
                       shrinkWrap: true,
-                      itemCount: restaurant.customerReviews.length,
+                      itemCount: widget.restaurant.customerReviews.length,
                       itemBuilder: (context, index) {
-                        final review = restaurant.customerReviews[index];
+                        final review = widget.restaurant.customerReviews[index];
                         return CommentCard(review: review);
                       }),
                 ],
